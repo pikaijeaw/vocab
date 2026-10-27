@@ -59,7 +59,7 @@ td.h{font-size:22px;font-family:"Noto Sans SC","Microsoft YaHei",sans-serif}
  <div class="top">
   <div class="logo">汉语 <b>HSK</b> Dashboard</div>
   <nav id="nav">
-   <button data-v="dash" class="on">Dashboard</button><button data-v="cards">Flashcards</button><button data-v="quiz">Quiz</button><button data-v="browse">Browse</button>
+   <button data-v="dash" class="on">Dashboard</button><button data-v="cards">Flashcards</button><button data-v="quiz">Quiz</button><button data-v="browse">Browse</button><button data-v="graph">Word Graph</button>
   </nav>
  </div>
  <div class="filters" id="filters"></div>
@@ -72,7 +72,7 @@ td.h{font-size:22px;font-family:"Noto Sans SC","Microsoft YaHei",sans-serif}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const DAY=864e5, BOXES=[0,1,2,4,8,16,32]; // days until next review per Leitner box
-const WORDS=window.HSK_DATA.map((r,i)=>({id:i,o:+r[0]||0,n:+r[1]||0,hz:r[2],tr:r[3],py:r[4],th:r[5],pos:r[6],en:r[7]}));
+const WORDS=window.HSK_DATA.map((r,i)=>({id:i,o:+r[0]||0,n:+r[1]||0,hz:r[2],tr:r[3],py:r[4],th:r[5],pos:r[6],en:r[7],z:+r[8]||0,auto:r[9]==='1'}));
 
 const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
@@ -81,7 +81,7 @@ let P=load('hsk_progress',{});          // id -> {b:box,d:due,s:seen,c:correct,w
 let L=load('hsk_log',{});               // yyyy-mm-dd -> reviews
 const today=()=>new Date().toISOString().slice(0,10);
 const saveAll=()=>{save('hsk_settings',S);save('hsk_progress',P);save('hsk_log',L)};
-const lvOf=w=>S.sys==='old'?w.o:w.n;
+const lvOf=w=>S.sys==='old'?w.o:S.sys==='2026'?w.z:w.n;
 const pool=()=>WORDS.filter(w=>lvOf(w)&&S.lv.includes(lvOf(w)));
 let view='dash';
 
@@ -96,14 +96,14 @@ function speak(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='zh-CN';u.r
 // ---------- filters ----------
 function renderFilters(){
   $('#filters').innerHTML=
-   `<span>List:</span><select id="sys"><option value="new"${S.sys==='new'?' selected':''}>New HSK 3.0</option><option value="old"${S.sys==='old'?' selected':''}>Old HSK 2.0</option></select>`+
+   `<span>List:</span><select id="sys"><option value="new"${S.sys==='new'?' selected':''}>New HSK 3.0</option><option value="2026"${S.sys==='2026'?' selected':''}>HSK 3.0 (2026)</option><option value="old"${S.sys==='old'?' selected':''}>Old HSK 2.0</option></select>`+
    [1,2,3,4,5,6].map(l=>`<span class="chip${S.lv.includes(l)?' on':''}" data-l="${l}">HSK ${l}</span>`).join('')+
    `<span style="color:var(--mute)">${pool().length} words</span>`;
   $('#sys').onchange=e=>{S.sys=e.target.value;saveAll();go(view)};
   document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{const l=+c.dataset.l;S.lv=S.lv.includes(l)?S.lv.filter(x=>x!==l):[...S.lv,l].sort();saveAll();go(view)});
 }
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
-function go(v){view=v;document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));renderFilters();({dash,cards,quiz,browse})[v]();}
+function go(v){view=v;document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));renderFilters();({dash,cards,quiz,browse,graph})[v]();}
 
 // ---------- dashboard ----------
 function stage(id){const p=P[id];if(!p||!p.s)return 0;return p.b>=4?3:p.b>=2?2:1} // 0 new,1 learning,2 familiar,3 mastered
@@ -128,7 +128,7 @@ function dash(){
   <div class="card"><div class="bar" style="height:16px">
    <i style="width:${100*cnt[3]/pl.length}%;background:var(--ok)" title="Mastered"></i><i style="width:${100*cnt[2]/pl.length}%;background:#7bc96f" title="Familiar"></i><i style="width:${100*cnt[1]/pl.length}%;background:var(--warn)" title="Learning"></i></div>
    <div class="tag" style="margin-top:8px">🟢 mastered ${cnt[3]} · 🟩 familiar ${cnt[2]} · 🟨 learning ${cnt[1]} · ⬜ new ${cnt[0]}</div></div>
-  <h2>By level (${S.sys==='new'?'HSK 3.0':'HSK 2.0'})</h2><div class="card">`;
+  <h2>By level (${S.sys==='new'?'HSK 3.0':S.sys==='2026'?'HSK 3.0 (2026)':'HSK 2.0'})</h2><div class="card">`;
   for(let l=1;l<=6;l++){
     const ws=WORDS.filter(w=>lvOf(w)===l),c=[0,0,0,0];ws.forEach(w=>c[stage(w.id)]++);
     h+=`<div class="lv"><b>HSK ${l}</b><div class="bar"><i style="width:${100*c[3]/ws.length}%;background:var(--ok)"></i><i style="width:${100*c[2]/ws.length}%;background:#7bc96f"></i><i style="width:${100*c[1]/ws.length}%;background:var(--warn)"></i></div><span>${c[1]+c[2]+c[3]} / ${ws.length} studied</span></div>`;
@@ -143,6 +143,88 @@ function dash(){
   $('#npd').onchange=e=>{S.newPerDay=Math.max(1,+e.target.value||20);saveAll()};
   $('#reset').onclick=e=>{e.preventDefault();if(confirm('Erase all progress?')){P={};L={};saveAll();dash()}};
 }
+// ---------- relation graph ----------
+const LVC=['#2f6bd6','#1f9d6b','#e0a01b','#d6402f','#8b5cd6','#14a3b8'];
+const isHan=c=>/[\u4e00-\u9fff]/.test(c);
+let gsel=null,gq='',gcap=30;
+function gIndex(){
+  const seen=new Map(),idx={};
+  pool().forEach(w=>{if(!seen.has(w.hz))seen.set(w.hz,w)});
+  const ws=[...seen.values()];
+  ws.forEach(w=>{new Set([...w.hz].filter(isHan)).forEach(c=>(idx[c]=idx[c]||[]).push(w))});
+  const rel=w=>{const s=new Set();[...new Set([...w.hz].filter(isHan))].forEach(c=>(idx[c]||[]).forEach(x=>{if(x.hz!==w.hz)s.add(x)}));return s};
+  return {ws,idx,rel,seen};
+}
+function graph(){
+  const G=gIndex();
+  if(gsel&&!G.seen.has(gsel))gsel=null;
+  const deg=G.ws.map(w=>[w,G.rel(w).size]).sort((a,b)=>b[1]-a[1]);
+  if(!gsel&&deg.length)gsel=(deg.find(([w])=>w.hz.length<=2)||deg[0])[0].hz;
+  const q=gq.trim().toLowerCase();
+  const hits=q?G.ws.filter(w=>w.hz.includes(q)||w.py.toLowerCase().includes(q)||w.en.toLowerCase().includes(q)||w.th.includes(q)).slice(0,12):[];
+  $('#app').innerHTML=`<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+   <input type="search" id="gq" placeholder="Search hanzi / pinyin / meaning…" value="${esc(gq)}" style="min-width:260px">
+   <label style="font-size:14px;color:var(--mute)">Max words per character <input type="number" id="gcap" min="5" max="80" value="${gcap}" style="width:70px"></label>
+   <span class="tag">A word is related to another when they share a Chinese character (e.g. 学 → 学生, 大学, 学习).</span></div>
+   ${hits.length?`<div class="row" style="justify-content:flex-start;margin:0 0 12px">${hits.map(w=>`<span class="chip" data-g="${esc(w.hz)}">${esc(w.hz)} <small>${esc(w.py)}</small></span>`).join('')}</div>`:''}
+   <div id="gmain"></div>
+   <h2>Most connected words (in selected levels)</h2>
+   <div class="card"><table><tr><th>#</th><th>Word</th><th>Pinyin</th><th>Meaning</th><th>Related words</th></tr>
+   ${deg.slice(0,30).map(([w,d],i)=>`<tr style="cursor:pointer" data-g="${esc(w.hz)}"><td>${i+1}</td><td class="h">${esc(w.hz)}</td><td>${esc(w.py)}</td><td>${esc(w.en.slice(0,60))}</td><td><b>${d}</b></td></tr>`).join('')}</table></div>`;
+  $('#gq').oninput=e=>{gq=e.target.value;const p=e.target.selectionStart;graph();const i=$('#gq');i.focus();i.setSelectionRange(p,p)};
+  $('#gcap').onchange=e=>{gcap=Math.max(5,Math.min(80,+e.target.value||30));graph()};
+  document.querySelectorAll('[data-g]').forEach(el=>el.onclick=()=>{gsel=el.dataset.g;gq='';graph();window.scrollTo(0,0)});
+  if(gsel)gDraw(G,G.seen.get(gsel));else $('#gmain').innerHTML='<div class="empty">No words in the selected levels.</div>';
+}
+function gDraw(G,c){
+  const chars=[...new Set([...c.hz].filter(isHan))];
+  const all=G.rel(c);
+  const nodes=[],links=[],byHz=new Map();
+  const add=(w,t)=>{let n=byHz.get(w.hz);if(!n){n={w,t,id:nodes.length,x:0,y:0,vx:0,vy:0,r:t==='c'?30:t==='h'?20:13};byHz.set(w.hz,n);nodes.push(n)}return n};
+  const W=760,H=560,cn=add(c,'c');cn.x=W/2;cn.y=H/2;cn.fixed=1;
+  let shown=0;const groups=[];
+  chars.forEach((ch,ci)=>{
+    const list=(G.idx[ch]||[]).filter(w=>w.hz!==c.hz).sort((a,b)=>lvOf(a)-lvOf(b)||a.hz.length-b.hz.length);
+    let hub=cn;
+    if(chars.length>1){const hw=G.seen.get(ch)||{hz:ch,py:'',en:'(character)',th:'',n:0,o:0};hub=add(hw,'h');links.push([cn,hub])}
+    const ang=2*Math.PI*ci/chars.length;
+    if(hub!==cn){hub.x=W/2+Math.cos(ang)*110;hub.y=H/2+Math.sin(ang)*110}
+    const take=list.filter(w=>w.hz!==ch||hub===cn).slice(0,gcap);
+    take.forEach(w=>{const n=add(w,'w');if(!n.x){n.x=hub.x+Math.cos(ang+Math.random()*2)*120;n.y=hub.y+Math.sin(ang+Math.random()*2)*120}links.push([hub,n])});
+    groups.push({ch,total:list.length,shown:take.length});
+  });
+  nodes.forEach(n=>{if(!n.x){n.x=W/2+Math.random()*100-50;n.y=H/2+Math.random()*100-50}});
+  for(let it=0;it<320;it++){
+    const a=1-it/320;
+    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+      const p=nodes[i],q=nodes[j];let dx=p.x-q.x,dy=p.y-q.y,d2=dx*dx+dy*dy+.01,d=Math.sqrt(d2);
+      const f=(900/d2)*a+(d<p.r+q.r+8?1.5:0);dx/=d;dy/=d;
+      p.vx+=dx*f;p.vy+=dy*f;q.vx-=dx*f;q.vy-=dy*f}
+    links.forEach(([p,q])=>{const dx=q.x-p.x,dy=q.y-p.y,d=Math.sqrt(dx*dx+dy*dy)||1,L=p.t==='c'?110:95,f=(d-L)*.04;
+      p.vx+=dx/d*f;p.vy+=dy/d*f;q.vx-=dx/d*f;q.vy-=dy/d*f});
+    nodes.forEach(n=>{if(n.fixed)return;n.vx+=(W/2-n.x)*.002;n.vy+=(H/2-n.y)*.002;n.x+=n.vx*.6;n.y+=n.vy*.6;n.vx*=.6;n.vy*=.6;
+      n.x=Math.max(n.r+4,Math.min(W-n.r-4,n.x));n.y=Math.max(n.r+4,Math.min(H-n.r-4,n.y))});
+  }
+  const lines=links.map(([p,q])=>`<line x1="${p.x.toFixed(1)}" y1="${p.y.toFixed(1)}" x2="${q.x.toFixed(1)}" y2="${q.y.toFixed(1)}" stroke="var(--line)" stroke-width="1.5"/>`).join('');
+  const circ=nodes.map(n=>{const lv=lvOf(n.w)||0,col=n.t==='c'?'var(--brand)':LVC[(lv||1)-1];
+    const fs=n.t==='c'?26:n.t==='h'?18:Math.max(9,14-(n.w.hz.length-1)*1.5);
+    return `<g data-g="${esc(n.w.hz)}" style="cursor:pointer"><title>${esc(n.w.hz)} ${esc(n.w.py)} — ${esc(n.w.en.slice(0,80))}${lv?' (HSK '+lv+')':''}</title>
+    <circle cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${n.t==='w'?Math.max(n.r,6+n.w.hz.length*5):n.r}" fill="${col}" fill-opacity="${n.t==='h'?.55:.9}" stroke="var(--card)" stroke-width="2"/>
+    <text x="${n.x.toFixed(1)}" y="${(n.y+fs*.35).toFixed(1)}" text-anchor="middle" font-size="${fs}" fill="#fff" style="pointer-events:none;font-family:'Noto Sans SC','Microsoft YaHei',sans-serif">${esc(n.w.hz)}</text></g>`}).join('');
+  const sh=nodes.filter(n=>n.t==='w').length;
+  $('#gmain').innerHTML=`<div class="grid" style="grid-template-columns:minmax(0,2fr) minmax(240px,1fr);gap:14px">
+   <div class="card" style="padding:8px"><svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">${lines}${circ}</svg>
+    <div class="tag" style="padding:6px 10px">${LVC.map((c,i)=>`<span style="color:${c}">●</span> HSK ${i+1}`).join(' &nbsp; ')} · click any node to re-center</div></div>
+   <div class="card"><div class="hz" style="font-size:${c.hz.length>3?40:64}px;text-align:center">${esc(c.hz)}</div>
+    <div style="text-align:center"><span class="py">${esc(c.py)}</span> <button class="sp" id="gspk">🔊</button></div>
+    <div style="text-align:center" class="th">${esc(c.th)}</div><div class="en" style="margin:6px auto;text-align:center">${esc(c.en)}</div>
+    <div class="stat" style="text-align:center;margin:12px 0"><div class="n" style="color:var(--brand)">${all.size}</div><div class="l">related words in selected levels</div></div>
+    ${groups.map(g=>`<div style="font-size:14px;margin:6px 0"><b style="font-size:20px;font-family:'Noto Sans SC','Microsoft YaHei',sans-serif">${esc(g.ch)}</b> appears in <b>${g.total}</b> other word${g.total===1?'':'s'}${g.shown<g.total?` <span class="tag">(showing ${g.shown})</span>`:''}</div>`).join('')}
+    ${!chars.length?'<div class="tag">No Chinese characters to relate.</div>':''}</div></div>`;
+  document.querySelectorAll('#gmain [data-g]').forEach(el=>el.onclick=()=>{gsel=el.dataset.g;graph()});
+  $('#gspk').onclick=()=>speak(c.hz);
+}
+
 window.HSKgo=go;
 
 // ---------- flashcards ----------
@@ -161,7 +243,7 @@ function drawCard(){
   const isNew=!(P[w.id]&&P[w.id].s);
   $('#app').innerHTML=`<div class="fc"><div class="tag">Card ${fc.i+1} / ${fc.q.length} · HSK ${lvOf(w)} ${isNew?'· <b>NEW</b>':''}</div>
   <div class="card face" id="face">${fc.flip?
-   `<div class="hz" style="font-size:64px">${esc(w.hz)}</div><div class="py">${esc(w.py)}</div><div class="th">${esc(w.th)}</div><div class="en">${esc(w.en)}</div><div class="tag">${esc(w.pos)}${w.tr!==w.hz?' · '+esc(w.tr):''}</div>`:
+   `<div class="hz" style="font-size:64px">${esc(w.hz)}</div><div class="py">${esc(w.py)}</div><div class="th">${esc(w.th)}</div><div class="en">${esc(w.en)}</div><div class="tag">${esc(w.pos)}${w.tr!==w.hz?' · '+esc(w.tr):''}${w.auto?' · Thai: machine-translated':''}</div>`:
    `<div class="hz">${esc(w.hz)}</div><div class="tag">tap or press Space to reveal</div>`}</div>
   <div class="row">${fc.flip?
    `<button class="btn bad" data-r="0">Again (1)</button><button class="btn ok" data-r="1">Good (2)</button><button class="btn warn" data-r="2">Easy (3)</button>`:

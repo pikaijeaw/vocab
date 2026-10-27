@@ -1,4 +1,4 @@
-param([int]$Port = 8080, [switch]$NoOpen)
+param([int]$Port = 5005, [switch]$NoOpen)
 # Tiny static file server for the HSK dashboard (localhost only).
 $root = $PSScriptRoot
 $types = @{ '.html' = 'text/html; charset=utf-8'; '.js' = 'text/javascript; charset=utf-8'; '.css' = 'text/css'; '.json' = 'application/json' }
