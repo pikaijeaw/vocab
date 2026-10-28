@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vocab · TOEIC</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#1d2433;--mute:#6b7487;--line:#e3e7ef;--brand:#2f6bd6;--brand2:#1f9d6b;--ok:#1f9d6b;--warn:#e0a01b;--bad:#d6402f;--shadow:0 2px 10px rgba(20,30,60,.07)}
+@media (prefers-color-scheme:dark){:root{--bg:#12151d;--card:#1b2030;--ink:#e8ecf5;--mute:#98a1b6;--line:#2a3147;--shadow:none}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,"Segoe UI","Noto Sans Thai",sans-serif}
+header{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 0}
+.logo{font-weight:800;font-size:18px}.logo b{color:var(--brand)}
+.subj{display:flex;gap:2px;background:var(--line);border-radius:10px;padding:3px;margin-left:auto}.subj a{padding:5px 12px;border-radius:8px;color:var(--mute);text-decoration:none;font-weight:700;font-size:14px}.subj a.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{border:0;background:none;color:var(--mute);font:inherit;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer}
+nav button.on{background:var(--brand);color:#fff}
+.filters{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:0 0 10px;font-size:14px}
+.chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;cursor:pointer;user-select:none;background:var(--card)}
+.chip.on{background:var(--brand2);color:#fff;border-color:var(--brand2)}
+select,input[type=search],input[type=number]{font:inherit;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+main{padding:20px 0 60px}
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--card);border-radius:14px;padding:18px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.stat .n{font-size:30px;font-weight:800}.stat .l{color:var(--mute);font-size:13px}
+h2{margin:22px 0 10px;font-size:18px}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.lv{display:grid;grid-template-columns:150px 1fr 160px;gap:10px;align-items:center;margin:10px 0;font-size:14px}
+.lv span:last-child{color:var(--mute);text-align:right}
+.btn{border:0;border-radius:10px;padding:10px 18px;font:inherit;font-weight:700;cursor:pointer;background:var(--brand);color:#fff}
+.btn.alt{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.btn.ok{background:var(--ok)}.btn.bad{background:var(--bad)}.btn.warn{background:var(--warn)}
+.fc{max-width:620px;margin:0 auto;text-align:center}
+.face{min-height:320px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;cursor:pointer}
+.wd{font-size:60px;line-height:1.1;font-weight:700;word-break:break-word}
+.py{font-size:24px;color:var(--brand)}.th{font-size:28px;font-weight:700}.en{color:var(--mute);font-size:15px;max-width:520px}
+.tag{font-size:12px;color:var(--mute)}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.opts{display:grid;gap:10px;margin-top:16px}
+.opt{text-align:left;padding:14px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:18px;cursor:pointer}
+.opt:hover{border-color:var(--brand)}.opt.right{border-color:var(--ok);background:rgba(31,157,107,.15)}.opt.wrong{border-color:var(--bad);background:rgba(214,64,47,.12)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--mute);font-size:12px;text-transform:uppercase;position:sticky;top:0;background:var(--card)}
+td.h{font-size:18px;font-weight:700}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--line)}
+.sp{background:none;border:0;cursor:pointer;font-size:18px}
+.pager{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:12px}
+.empty{padding:40px;text-align:center;color:var(--mute)}
+.kbd{font-size:12px;color:var(--mute);margin-top:10px}
+.auto{display:inline-block;font-size:11px;color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:0 5px;margin-left:4px;vertical-align:middle}
+@media(max-width:600px){.wd{font-size:44px}.lv{grid-template-columns:110px 1fr}.lv span:last-child{display:none}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+ <div class="top">
+  <div class="logo">📘 <b>TOEIC</b> Vocabulary</div>
+  <nav id="nav">
+   <button data-v="dash" class="on">Dashboard</button><button data-v="cards">Flashcards</button><button data-v="quiz">Quiz</button><button data-v="browse">Browse</button><button data-v="graph">Word Graph</button>
+  </nav>
+  <div class="subj"><a href="./">汉语 HSK</a><a href="toeic.html" class="on">📘 TOEIC</a></div>
+ </div>
+ <div class="filters" id="filters"></div>
+</div></header>
+<main class="wrap" id="app"></main>
+
+<script src="data_toeic.js"></script>
+<script>
+(()=>{
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const DAY=864e5, BOXES=[0,1,2,4,8,16,32];
+// columns: band,list,rank,word,ipa,thai,pos,meaning,forms,thai_auto
+const WORDS=window.TOEIC_DATA.map((r,i)=>({id:i,b:+r[0]||0,list:r[1],rank:+r[2]||0,w:r[3],ipa:r[4],th:r[5],pos:r[6],en:r[7],forms:r[8],auto:r[9]==='1'}));
+const BANDS=['','General 1–1000','General 1001–2000','General 2001+','TOEIC core A','TOEIC core B','TOEIC core C'];
+const BSHORT=['','Gen 1k','Gen 2k','Gen 3k','TOEIC A','TOEIC B','TOEIC C'];
+
+const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
+let S=Object.assign({lv:[4,5,6],newPerDay:20,goal:30},load('toeic_settings',{}));
+let P=load('toeic_progress',{}), L=load('toeic_log',{});
+const today=()=>new Date().toISOString().slice(0,10);
+const saveAll=()=>{save('toeic_settings',S);save('toeic_progress',P);save('toeic_log',L)};
+const pool=()=>WORDS.filter(w=>S.lv.includes(w.b));
+let view='dash';
+
+function record(w,res){
+  const p=P[w.id]||{b:0,d:0,s:0,c:0,w:0};
+  p.s++; if(res===0){p.b=Math.max(1,p.b>0?p.b-1:1);p.w++;} else {p.b=Math.min(6,(p.b||0)+res);p.c++;}
+  p.d=Date.now()+(res===0?0.007:BOXES[p.b])*DAY;
+  P[w.id]=p; L[today()]=(L[today()]||0)+1; saveAll();
+}
+function speak(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.9;speechSynthesis.cancel();speechSynthesis.speak(u)}catch{}}
+const autoTag=w=>w.auto?'<span class="auto" title="Thai meaning is machine-translated">MT</span>':'';
+
+function renderFilters(){
+  $('#filters').innerHTML=[1,2,3,4,5,6].map(l=>`<span class="chip${S.lv.includes(l)?' on':''}" data-l="${l}" title="${BANDS[l]}">${BSHORT[l]}</span>`).join('')+
+   `<span style="color:var(--mute)">${pool().length} words</span>`;
+  document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{const l=+c.dataset.l;S.lv=S.lv.includes(l)?S.lv.filter(x=>x!==l):[...S.lv,l].sort();saveAll();go(view)});
+}
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
+function go(v){view=v;document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));renderFilters();({dash,cards,quiz,browse,graph})[v]();}
+window.TOEICgo=go;
+
+// ---------- dashboard ----------
+function stage(id){const p=P[id];if(!p||!p.s)return 0;return p.b>=4?3:p.b>=2?2:1}
+function dash(){
+  const pl=pool(),now=Date.now(),cnt=[0,0,0,0];pl.forEach(w=>cnt[stage(w.id)]++);
+  const due=pl.filter(w=>P[w.id]&&P[w.id].s&&P[w.id].d<=now).length;
+  const seenAll=Object.values(P).filter(p=>p.s).length;
+  let streak=0;for(let d=new Date();;d.setDate(d.getDate()-1)){const k=d.toISOString().slice(0,10);if(L[k])streak++;else if(k===today())continue;else break;}
+  const t=L[today()]||0, n=Math.max(1,pl.length);
+  const acc=(()=>{let c=0,w=0;Object.values(P).forEach(p=>{c+=p.c;w+=p.w});return c+w?Math.round(100*c/(c+w)):0})();
+  let h=`<div class="grid g4">
+   <div class="card stat"><div class="n">${t}<small style="font-size:15px;color:var(--mute)"> / ${S.goal}</small></div><div class="l">reviews today (goal)</div><div class="bar" style="margin-top:8px"><i style="width:${Math.min(100,100*t/S.goal)}%;background:var(--ok)"></i></div></div>
+   <div class="card stat"><div class="n">${due}</div><div class="l">cards due for review</div></div>
+   <div class="card stat"><div class="n">${streak} 🔥</div><div class="l">day streak</div></div>
+   <div class="card stat"><div class="n">${acc}%</div><div class="l">accuracy · ${seenAll} words studied</div></div>
+  </div>
+  <div class="row" style="justify-content:flex-start"><button class="btn" onclick="TOEICgo('cards')">Start flashcards</button><button class="btn alt" onclick="TOEICgo('quiz')">Take a quiz</button>
+   <label style="margin-left:auto;font-size:14px;color:var(--mute)">Daily goal <input type="number" id="goal" min="5" max="500" value="${S.goal}" style="width:80px"></label>
+   <label style="font-size:14px;color:var(--mute)">New cards/day <input type="number" id="npd" min="1" max="200" value="${S.newPerDay}" style="width:80px"></label></div>
+  <h2>Progress in selected bands</h2>
+  <div class="card"><div class="bar" style="height:16px">
+   <i style="width:${100*cnt[3]/n}%;background:var(--ok)"></i><i style="width:${100*cnt[2]/n}%;background:#7bc96f"></i><i style="width:${100*cnt[1]/n}%;background:var(--warn)"></i></div>
+   <div class="tag" style="margin-top:8px">🟢 mastered ${cnt[3]} · 🟩 familiar ${cnt[2]} · 🟨 learning ${cnt[1]} · ⬜ new ${cnt[0]}</div></div>
+  <h2>By band</h2><div class="card">`;
+  for(let l=1;l<=6;l++){
+    const ws=WORDS.filter(w=>w.b===l),c=[0,0,0,0];ws.forEach(w=>c[stage(w.id)]++);const m=Math.max(1,ws.length);
+    h+=`<div class="lv"><b>${BANDS[l]}</b><div class="bar"><i style="width:${100*c[3]/m}%;background:var(--ok)"></i><i style="width:${100*c[2]/m}%;background:#7bc96f"></i><i style="width:${100*c[1]/m}%;background:var(--warn)"></i></div><span>${c[1]+c[2]+c[3]} / ${ws.length} studied</span></div>`;
+  }
+  h+=`<p class="tag">General = New General Service List (most frequent English words). TOEIC core = TOEIC Service List, the extra words that appear in TOEIC tests. Together ≈ 99% of TOEIC text.</p></div>
+  <h2>Last 14 days</h2><div class="card"><div style="display:flex;align-items:flex-end;gap:6px;height:90px">`;
+  const days=[...Array(14)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-13+i);return d.toISOString().slice(0,10)});
+  const mx=Math.max(1,...days.map(d=>L[d]||0));
+  h+=days.map(d=>`<div title="${d}: ${L[d]||0}" style="flex:1;text-align:center;font-size:10px;color:var(--mute)"><div style="background:var(--brand);border-radius:4px;height:${Math.max(2,70*(L[d]||0)/mx)}px;margin-bottom:3px"></div>${d.slice(8)}</div>`).join('');
+  h+=`</div></div><p class="tag">Progress is saved in this browser (localStorage). <a href="#" id="reset">Reset all progress</a> · <span class="auto">MT</span> = Thai meaning machine-translated.</p>`;
+  $('#app').innerHTML=h;
+  $('#goal').onchange=e=>{S.goal=Math.max(5,+e.target.value||30);saveAll();dash()};
+  $('#npd').onchange=e=>{S.newPerDay=Math.max(1,+e.target.value||20);saveAll()};
+  $('#reset').onclick=e=>{e.preventDefault();if(confirm('Erase all progress?')){P={};L={};saveAll();dash()}};
+}
+
+// ---------- word graph ----------
+// Two relations: same word family (shared stem, e.g. account → accountant, accounting)
+// and same Thai meaning (synonyms, e.g. client / customer → ลูกค้า).
+const LVC=['#2f6bd6','#14a3b8','#8b5cd6','#1f9d6b','#e0a01b','#d6402f'];
+let gsel=null,gq='',gcap=25;
+// word family = same base after stripping common English suffixes (account, accountant, accounting, accountable)
+const SUF=['ations','ation','ments','ment','ships','ship','nesses','ness','ities','ity','ically','ally','ance','ence','ants','ant','ents','ent','ions','ion','ives','ive','able','ible','izes','ize','ises','ise','ists','ist','ees','ee','ers','er','ors','or','ings','ing','ful','less','ly','al','ed','es','s','y'];
+const baseCache=new Map();
+const base=w=>{if(baseCache.has(w))return baseCache.get(w);let b=w.toLowerCase(),ch=true;
+  while(ch){ch=false;for(const x of SUF)if(b.endsWith(x)&&b.length-x.length>=4){b=b.slice(0,-x.length);ch=true;break}}
+  b=b.replace(/e$/,'').replace(/i$/,'y').replace(/([^aeiou])\1$/,'$1');baseCache.set(w,b);return b};
+const family=(a,b)=>a!==b&&base(a)===base(b);
+// synonyms: match on the main (first) Thai sense only - secondary senses link unrelated words
+const thKeys=w=>{const t=(w.th.split(';')[0]||'').replace(/\(.*?\)/g,'').trim();return t.length>1?[t]:[]};
+function gIndex(){
+  const ws=pool(),byW=new Map(ws.map(w=>[w.w,w])),st={},th={};
+  ws.forEach(w=>{const k=base(w.w);(st[k]=st[k]||[]).push(w);thKeys(w).forEach(t=>(th[t]=th[t]||[]).push(w))});
+  const fam=w=>(st[base(w.w)]||[]).filter(x=>x.id!==w.id);
+  const syn=w=>{const s=new Map();thKeys(w).forEach(t=>(th[t]||[]).forEach(x=>{if(x.id!==w.id)s.set(x.id,x)}));return [...s.values()]};
+  const rel=w=>new Set([...fam(w),...syn(w)].map(x=>x.id));
+  return {ws,byW,fam,syn,rel};
+}
+function graph(){
+  const G=gIndex();
+  if(gsel&&!G.byW.has(gsel))gsel=null;
+  const deg=G.ws.map(w=>[w,G.rel(w).size]).sort((a,b)=>b[1]-a[1]||a[0].rank-b[0].rank);
+  if(!gsel&&deg.length)gsel=deg[0][0].w;
+  const q=gq.trim().toLowerCase();
+  const hits=q?G.ws.filter(w=>w.w.toLowerCase().includes(q)||w.th.includes(q)||w.en.toLowerCase().includes(q)).slice(0,14):[];
+  $('#app').innerHTML=`<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+   <input type="search" id="gq" placeholder="Search word / Thai / meaning…" value="${esc(gq)}" style="min-width:260px">
+   <label style="font-size:14px;color:var(--mute)">Max words per group <input type="number" id="gcap" min="5" max="80" value="${gcap}" style="width:70px"></label>
+   <span class="tag">Related = same word family (account → accountant) or same Thai meaning (client, customer → ลูกค้า).</span></div>
+   ${hits.length?`<div class="row" style="justify-content:flex-start;margin:0 0 12px">${hits.map(w=>`<span class="chip" data-g="${esc(w.w)}">${esc(w.w)}</span>`).join('')}</div>`:''}
+   <div id="gmain"></div>
+   <h2>Most connected words (in selected bands)</h2>
+   <div class="card"><table><tr><th>#</th><th>Word</th><th>Thai</th><th>Meaning</th><th>Related</th></tr>
+   ${deg.slice(0,30).map(([w,d],i)=>`<tr style="cursor:pointer" data-g="${esc(w.w)}"><td>${i+1}</td><td class="h">${esc(w.w)}</td><td>${esc(w.th.slice(0,50))}</td><td>${esc(w.en.slice(0,60))}</td><td><b>${d}</b></td></tr>`).join('')}</table></div>`;
+  $('#gq').oninput=e=>{gq=e.target.value;const p=e.target.selectionStart;graph();const i=$('#gq');i.focus();i.setSelectionRange(p,p)};
+  $('#gcap').onchange=e=>{gcap=Math.max(5,Math.min(80,+e.target.value||25));graph()};
+  document.querySelectorAll('[data-g]').forEach(el=>el.onclick=()=>{gsel=el.dataset.g;gq='';graph();window.scrollTo(0,0)});
+  if(gsel)gDraw(G,G.byW.get(gsel));else $('#gmain').innerHTML='<div class="empty">No words in the selected bands.</div>';
+}
+function gDraw(G,c){
+  const fam=G.fam(c),syn=G.syn(c).filter(x=>!fam.includes(x)),all=G.rel(c);
+  const W=760,H=560,nodes=[],links=[],by=new Map();
+  const add=(w,t)=>{let n=by.get(t+(w.id??w.w));if(!n){n={w,t,x:0,y:0,vx:0,vy:0,r:t==='c'?34:t==='h'?24:14};by.set(t+(w.id??w.w),n);nodes.push(n)}return n};
+  const cn=add(c,'c');cn.x=W/2;cn.y=H/2;cn.fixed=1;
+  const groups=[{name:'Word family',list:fam,ang:Math.PI},{name:'Same Thai meaning',list:syn,ang:0}].filter(g=>g.list.length);
+  groups.forEach(g=>{
+    const hub=add({w:g.name,id:'h'+g.name},'h');hub.x=W/2+Math.cos(g.ang)*130;hub.y=H/2+Math.sin(g.ang)*130;links.push([cn,hub]);
+    g.shown=g.list.slice().sort((a,b)=>a.b-b.b||a.rank-b.rank).slice(0,gcap);
+    g.shown.forEach(w=>{const n=add(w,'w');n.x=hub.x+Math.cos(g.ang+Math.random()*2-1)*110;n.y=hub.y+Math.sin(g.ang+Math.random()*2-1)*110;links.push([hub,n])});
+  });
+  const rad=n=>n.t==='w'?Math.max(n.r,8+n.w.w.length*3.2):n.r;
+  for(let it=0;it<320;it++){
+    const a=1-it/320;
+    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+      const p=nodes[i],q=nodes[j];let dx=p.x-q.x,dy=p.y-q.y,d2=dx*dx+dy*dy+.01,d=Math.sqrt(d2);
+      const f=(1100/d2)*a+(d<rad(p)+rad(q)+6?1.5:0);dx/=d;dy/=d;p.vx+=dx*f;p.vy+=dy*f;q.vx-=dx*f;q.vy-=dy*f}
+    links.forEach(([p,q])=>{const dx=q.x-p.x,dy=q.y-p.y,d=Math.sqrt(dx*dx+dy*dy)||1,f=(d-(p.t==='c'?130:100))*.04;
+      p.vx+=dx/d*f;p.vy+=dy/d*f;q.vx-=dx/d*f;q.vy-=dy/d*f});
+    nodes.forEach(n=>{if(n.fixed)return;n.vx+=(W/2-n.x)*.002;n.vy+=(H/2-n.y)*.002;n.x+=n.vx*.6;n.y+=n.vy*.6;n.vx*=.6;n.vy*=.6;
+      const r=rad(n);n.x=Math.max(r+4,Math.min(W-r-4,n.x));n.y=Math.max(r+4,Math.min(H-r-4,n.y))});
+  }
+  const lines=links.map(([p,q])=>`<line x1="${p.x.toFixed(1)}" y1="${p.y.toFixed(1)}" x2="${q.x.toFixed(1)}" y2="${q.y.toFixed(1)}" stroke="var(--line)" stroke-width="1.5"/>`).join('');
+  const circ=nodes.map(n=>{
+    if(n.t==='h')return `<g><circle cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${n.r}" fill="var(--mute)" fill-opacity=".35"/><text x="${n.x.toFixed(1)}" y="${(n.y+4).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink)">${esc(n.w.w)}</text></g>`;
+    const col=n.t==='c'?'var(--bad)':LVC[(n.w.b||1)-1],fs=n.t==='c'?15:Math.max(9,13-Math.max(0,n.w.w.length-7)*.5);
+    return `<g data-g="${esc(n.w.w)}" style="cursor:pointer"><title>${esc(n.w.w)} — ${esc(n.w.th)} (${BANDS[n.w.b]})</title>
+    <circle cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${rad(n)}" fill="${col}" fill-opacity=".9" stroke="var(--card)" stroke-width="2"/>
+    <text x="${n.x.toFixed(1)}" y="${(n.y+fs*.35).toFixed(1)}" text-anchor="middle" font-size="${fs}" font-weight="600" fill="#fff" style="pointer-events:none">${esc(n.w.w)}</text></g>`}).join('');
+  $('#gmain').innerHTML=`<div class="grid" style="grid-template-columns:minmax(0,2fr) minmax(240px,1fr);gap:14px">
+   <div class="card" style="padding:8px"><svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">${lines}${circ}</svg>
+    <div class="tag" style="padding:6px 10px">${LVC.map((c,i)=>`<span style="color:${c}">●</span> ${BSHORT[i+1]}`).join(' &nbsp; ')} · click a word to re-center</div></div>
+   <div class="card"><div class="wd" style="font-size:${c.w.length>10?30:42}px;text-align:center">${esc(c.w)}</div>
+    <div style="text-align:center"><span class="py">${esc(c.ipa)}</span> <button class="sp" id="gspk">🔊</button></div>
+    <div style="text-align:center" class="th">${esc(c.th)}${autoTag(c)}</div><div class="en" style="margin:6px auto;text-align:center">${esc(c.en)}</div>
+    <div class="tag" style="text-align:center">${esc(c.pos)} · ${BANDS[c.b]}${c.forms?' · '+esc(c.forms):''}</div>
+    <div class="stat" style="text-align:center;margin:12px 0"><div class="n" style="color:var(--bad)">${all.size}</div><div class="l">related words in selected bands</div></div>
+    <div style="font-size:14px;margin:6px 0">Word family: <b>${fam.length}</b>${fam.length>gcap?` <span class="tag">(showing ${gcap})</span>`:''}</div>
+    <div style="font-size:14px;margin:6px 0">Same Thai meaning: <b>${syn.length}</b>${syn.length>gcap?` <span class="tag">(showing ${gcap})</span>`:''}</div></div></div>`;
+  document.querySelectorAll('#gmain [data-g]').forEach(el=>el.onclick=()=>{gsel=el.dataset.g;graph()});
+  $('#gspk').onclick=()=>speak(c.w);
+}
+
+// ---------- flashcards ----------
+let fc={q:[],i:0,flip:false,newShown:0};
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+function buildQueue(){
+  const pl=pool(),now=Date.now();
+  const due=pl.filter(w=>P[w.id]&&P[w.id].s&&P[w.id].d<=now).sort((a,b)=>P[a.id].d-P[b.id].d);
+  const fresh=shuffle(pl.filter(w=>!(P[w.id]&&P[w.id].s))).slice(0,Math.max(0,S.newPerDay-(fc.newShown||0)));
+  return [...due.slice(0,200),...fresh];
+}
+function cards(){fc={q:buildQueue(),i:0,flip:false,newShown:0};drawCard()}
+function drawCard(){
+  const w=fc.q[fc.i];
+  if(!w){$('#app').innerHTML=`<div class="card empty"><div style="font-size:48px">🎉</div><h2>All caught up!</h2><p>No more cards due or new cards for now.<br>Raise “New cards/day” on the dashboard or pick other bands.</p><button class="btn" onclick="TOEICgo('dash')">Back to dashboard</button></div>`;return}
+  const isNew=!(P[w.id]&&P[w.id].s);
+  $('#app').innerHTML=`<div class="fc"><div class="tag">Card ${fc.i+1} / ${fc.q.length} · ${BANDS[w.b]} ${isNew?'· <b>NEW</b>':''}</div>
+  <div class="card face" id="face">${fc.flip?
+   `<div class="wd" style="font-size:44px">${esc(w.w)}</div><div class="py">${esc(w.ipa)}</div><div class="th">${esc(w.th)}${autoTag(w)}</div><div class="en">${esc(w.en)}</div><div class="tag">${esc(w.pos)}${w.forms?' · '+esc(w.forms):''}</div>`:
+   `<div class="wd">${esc(w.w)}</div><div class="tag">tap or press Space to reveal</div>`}</div>
+  <div class="row">${fc.flip?
+   `<button class="btn bad" data-r="0">Again (1)</button><button class="btn ok" data-r="1">Good (2)</button><button class="btn warn" data-r="2">Easy (3)</button>`:
+   `<button class="btn" id="rev">Show answer</button>`}<button class="btn alt" id="spk">🔊 Listen (S)</button></div>
+  <div class="kbd">Keys: Space = flip · 1/2/3 = rate · S = speak</div></div>`;
+  $('#face').onclick=()=>{fc.flip=!fc.flip;drawCard()};
+  const rv=$('#rev');if(rv)rv.onclick=()=>{fc.flip=true;drawCard()};
+  $('#spk').onclick=()=>speak(w.w);
+  document.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>rate(+b.dataset.r));
+}
+function rate(r){const w=fc.q[fc.i];if(!w||!fc.flip)return;const isNew=!(P[w.id]&&P[w.id].s);record(w,r);if(isNew)fc.newShown++;
+  if(r===0)fc.q.push(w);fc.i++;fc.flip=false;drawCard()}
+
+// ---------- quiz ----------
+let qz={mode:'w2th',n:0,ok:0,cur:null};
+function quiz(){
+  $('#app').innerHTML=`<div class="fc"><div class="card"><h2 style="margin-top:0">Quiz</h2><p>Direction:</p><div class="row" style="margin-top:0">
+   <button class="btn" data-m="w2th">English → Thai</button><button class="btn alt" data-m="th2w">Thai → English</button><button class="btn alt" data-m="def2w">Meaning → word</button><button class="btn alt" data-m="au2w">🔊 Listen → word</button></div></div></div>`;
+  document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{qz={mode:b.dataset.m,n:0,ok:0,cur:null};nextQ()});
+}
+function nextQ(){
+  const pl=pool().filter(w=>qz.mode!=='def2w'||w.en);if(pl.length<4){$('#app').innerHTML='<div class="card empty">Select more bands to quiz.</div>';return}
+  const now=Date.now(),dueFirst=pl.filter(w=>P[w.id]&&P[w.id].s&&P[w.id].d<=now);
+  const src=dueFirst.length&&Math.random()<.5?dueFirst:pl,w=src[Math.random()*src.length|0];
+  const key=qz.mode==='w2th'?'th':'w',opts=[w];let guard=0;
+  while(opts.length<4&&guard++<200){const c=pl[Math.random()*pl.length|0];if(!opts.some(o=>o[key]===c[key]))opts.push(c)}
+  shuffle(opts);qz.cur={w,opts,answered:false};
+  const q=qz.mode==='w2th'?`<div class="wd" style="font-size:44px">${esc(w.w)}</div>`:qz.mode==='th2w'?`<div class="th" style="font-size:30px">${esc(w.th)}</div>`:
+    qz.mode==='def2w'?`<div style="font-size:20px">${esc(w.en)}</div>`:`<button class="btn" id="play" style="font-size:26px">🔊 Play</button>`;
+  $('#app').innerHTML=`<div class="fc"><div class="tag">Question ${qz.n+1} · score ${qz.ok}/${qz.n} · <a href="#" id="end">end quiz</a></div>
+   <div class="card" style="min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center">${q}</div>
+   <div class="opts">${opts.map((o,i)=>`<button class="opt" data-i="${i}"><b style="color:var(--mute)">${i+1}</b>&nbsp; ${esc(o[key])}</button>`).join('')}</div>
+   <div id="fb"></div><div class="kbd">Keys: 1–4 to answer · Enter = next</div></div>`;
+  document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(+b.dataset.i));
+  $('#end').onclick=e=>{e.preventDefault();quiz()};
+  const pb=$('#play');if(pb){pb.onclick=()=>speak(w.w);speak(w.w)}
+}
+function answer(i){
+  const c=qz.cur;if(!c||c.answered)return;c.answered=true;const ok=c.opts[i].id===c.w.id;
+  document.querySelectorAll('.opt').forEach((b,j)=>{if(c.opts[j].id===c.w.id)b.classList.add('right');else if(j===i)b.classList.add('wrong')});
+  qz.n++;if(ok)qz.ok++;record(c.w,ok?1:0);
+  $('#fb').innerHTML=`<div class="card" style="margin-top:12px;text-align:center"><span class="wd" style="font-size:32px">${esc(c.w.w)}</span> <span class="py">${esc(c.w.ipa)}</span><div class="th" style="font-size:22px">${esc(c.w.th)}${autoTag(c.w)}</div><div class="en" style="margin:auto">${esc(c.w.en)}</div><div class="row"><button class="btn" id="nx">Next →</button><button class="btn alt" id="sp2">🔊</button></div></div>`;
+  $('#nx').onclick=nextQ;$('#sp2').onclick=()=>speak(c.w.w);
+}
+
+// ---------- browse ----------
+let br={q:'',page:0,st:'all'};
+function browse(){
+  const run=()=>{
+    const q=br.q.trim().toLowerCase();
+    const ws=pool().filter(w=>(br.st==='all'||(br.st==='new'?stage(w.id)===0:br.st==='mt'?w.auto:stage(w.id)>0))&&(!q||w.w.toLowerCase().includes(q)||w.th.includes(q)||w.en.toLowerCase().includes(q)||w.forms.toLowerCase().includes(q)));
+    const per=100,pages=Math.max(1,Math.ceil(ws.length/per));br.page=Math.min(br.page,pages-1);
+    const cols=['#e3e7ef','#e0a01b','#7bc96f','#1f9d6b'];
+    $('#list').innerHTML=ws.length?`<table><thead><tr><th></th><th>Word</th><th>IPA</th><th>Thai</th><th>English</th><th>POS</th><th>Band</th><th></th></tr></thead><tbody>`+
+     ws.slice(br.page*per,(br.page+1)*per).map(w=>`<tr><td><span class="dot" style="background:${cols[stage(w.id)]}"></span></td><td class="h">${esc(w.w)}</td><td>${esc(w.ipa)}</td><td>${esc(w.th)}${autoTag(w)}</td><td>${esc(w.en)}</td><td>${esc(w.pos)}</td><td>${BSHORT[w.b]}</td><td><button class="sp" data-s="${esc(w.w)}">🔊</button></td></tr>`).join('')+`</tbody></table>
+     <div class="pager"><button class="btn alt" id="pv">‹</button>Page ${br.page+1} / ${pages} · ${ws.length} words<button class="btn alt" id="nxp">›</button></div>`:'<div class="empty">No matches.</div>';
+    document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>speak(b.dataset.s));
+    const pv=$('#pv'),nx=$('#nxp');if(pv){pv.onclick=()=>{br.page=Math.max(0,br.page-1);run()};nx.onclick=()=>{br.page=Math.min(pages-1,br.page+1);run()}}
+  };
+  $('#app').innerHTML=`<div class="row" style="justify-content:flex-start;margin:0 0 12px"><input type="search" id="q" placeholder="Search word, Thai, English, word forms…" style="flex:1;min-width:220px" value="${esc(br.q)}">
+   <select id="st"><option value="all">All words</option><option value="new">Not studied yet</option><option value="seen">Studied</option><option value="mt">Machine-translated Thai</option></select></div><div class="card" style="padding:6px 12px;overflow:auto" id="list"></div>`;
+  $('#st').value=br.st;
+  $('#q').oninput=e=>{br.q=e.target.value;br.page=0;run()};$('#st').onchange=e=>{br.st=e.target.value;br.page=0;run()};
+  run();
+}
+
+addEventListener('keydown',e=>{
+  if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName))return;
+  if(view==='cards'){
+    if(e.code==='Space'){e.preventDefault();if(!fc.flip){fc.flip=true;drawCard()}else rate(1)}
+    else if(fc.flip&&'123'.includes(e.key))rate(+e.key-1);
+    else if(e.key.toLowerCase()==='s'&&fc.q[fc.i])speak(fc.q[fc.i].w);
+  }else if(view==='quiz'&&qz.cur){
+    if('1234'.includes(e.key)&&e.key)answer(+e.key-1);
+    else if(e.key==='Enter'&&qz.cur.answered)nextQ();
+  }
+});
+go('dash');
+})();
+</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Daily HSK vocab sync.
+"""HSK vocab sync (run every 2 weeks by vocab-sync.timer).
 
 1. Download the HSK word list (drkameleon/complete-hsk-vocabulary, MIT).
 2. Check every CSV row against it: word exists, traditional form, pinyin,
@@ -8,14 +8,14 @@
    Thai for new words is machine-translated (Google) and flagged thai_auto=1.
 4. Rebuild dashboard/data.js, commit and push if anything changed.
 
-Usage: update_vocab.py [--dry-run] [--no-push] [--max-new N]
+Usage: update_hsk.py [--dry-run] [--no-push] [--max-new N]
 """
 import argparse, csv, datetime, io, json, os, re, subprocess, sys, time, unicodedata
 import urllib.parse, urllib.request
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CSV_PATH = os.path.join(REPO, "hsk_vocab_level1-6.csv")
-DATA_JS = os.path.join(REPO, "dashboard", "data.js")
+DATA_JS = os.path.join(REPO, "dashboard", "data_hsk.js")
 SRC_URL = "https://raw.githubusercontent.com/drkameleon/complete-hsk-vocabulary/main/complete.json"
 TR_URL = "https://translate.googleapis.com/translate_a/single"
 COLS = ["hsk2_old_level", "hsk3_new_level", "hanzi", "traditional", "pinyin",
@@ -183,15 +183,15 @@ def main():
         with open(DATA_JS, "w", encoding="utf-8") as f:
             f.write(js)
 
-    if not git("status", "--porcelain"):
+    if not git("status", "--porcelain", "--", CSV_PATH, DATA_JS):
         log("no changes"); return 0
-    git("add", "-A")
-    msg = f"vocab sync {datetime.date.today()}: +{len(new)} words, {len(fixes)} fixes"
+    git("add", CSV_PATH, DATA_JS)
+    msg = f"hsk sync {datetime.date.today()}: +{len(new)} words, {len(fixes)} fixes"
     git("commit", "-m", msg)
     log(f"committed: {msg}")
     if not a.no_push:
-        git("pull", "--rebase", "--autostash")
-        git("push", "origin", "HEAD")
+        br = git("rev-parse", "--abbrev-ref", "HEAD"); git("pull", "--rebase", "--autostash", "origin", br)
+        git("push", "origin", f"HEAD:{br}")
         log("pushed")
     return 0
 

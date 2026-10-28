@@ -1,11 +1,11 @@
 param([int]$Port = 5005, [switch]$NoOpen)
-# Tiny static file server for the HSK dashboard (localhost only).
+# Tiny static file server for the Vocab dashboard (localhost only).
 $root = $PSScriptRoot
 $types = @{ '.html' = 'text/html; charset=utf-8'; '.js' = 'text/javascript; charset=utf-8'; '.css' = 'text/css'; '.json' = 'application/json' }
 $listener = New-Object System.Net.HttpListener
 $listener.Prefixes.Add("http://localhost:$Port/")
 $listener.Start()
-Write-Host "HSK dashboard running at http://localhost:$Port/  (Ctrl+C to stop)"
+Write-Host "Vocab dashboard running at http://localhost:$Port/  (Ctrl+C to stop)"
 if (-not $NoOpen) { Start-Process "http://localhost:$Port/" }
 try {
   while ($listener.IsListening) {
