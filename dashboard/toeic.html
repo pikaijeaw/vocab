@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Vocab · TOEIC</title>
+<meta name="apple-mobile-web-app-title" content="Vocab TOEIC">
 <style>
 :root{--bg:#f6f7fb;--card:#fff;--ink:#1d2433;--mute:#6b7487;--line:#e3e7ef;--brand:#2f6bd6;--brand2:#1f9d6b;--ok:#1f9d6b;--warn:#e0a01b;--bad:#d6402f;--shadow:0 2px 10px rgba(20,30,60,.07)}
 @media (prefers-color-scheme:dark){:root{--bg:#12151d;--card:#1b2030;--ink:#e8ecf5;--mute:#98a1b6;--line:#2a3147;--shadow:none}}
@@ -53,15 +54,20 @@ td.h{font-size:18px;font-weight:700}
 .empty{padding:40px;text-align:center;color:var(--mute)}
 .kbd{font-size:12px;color:var(--mute);margin-top:10px}
 .auto{display:inline-block;font-size:11px;color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:0 5px;margin-left:4px;vertical-align:middle}
-@media(max-width:600px){.wd{font-size:44px}.lv{grid-template-columns:110px 1fr}.lv span:last-child{display:none}}
 </style>
+<meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12151d" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="stylesheet" href="responsive.css">
 </head>
 <body>
 <header><div class="wrap">
  <div class="top">
-  <div class="logo">📘 <b>TOEIC</b> Vocabulary</div>
+  <div class="logo">📘 <b>TOEIC</b><span class="lg-x"> Vocabulary</span></div>
   <nav id="nav">
-   <button data-v="dash" class="on">Dashboard</button><button data-v="cards">Flashcards</button><button data-v="quiz">Quiz</button><button data-v="browse">Browse</button><button data-v="graph">Word Graph</button>
+   <button data-v="dash" class="on"><i>🏠</i><span>Dashboard</span></button><button data-v="cards"><i>🃏</i><span>Flashcards</span></button><button data-v="quiz"><i>✅</i><span>Quiz</span></button><button data-v="browse"><i>📖</i><span>Browse</span></button><button data-v="graph"><i>🕸️</i><span>Graph</span></button>
   </nav>
   <div class="subj"><a href="./">汉语 HSK</a><a href="toeic.html" class="on">📘 TOEIC</a></div>
  </div>
@@ -132,7 +138,7 @@ function dash(){
   <h2>By band</h2><div class="card">`;
   for(let l=1;l<=6;l++){
     const ws=WORDS.filter(w=>w.b===l),c=[0,0,0,0];ws.forEach(w=>c[stage(w.id)]++);const m=Math.max(1,ws.length);
-    h+=`<div class="lv"><b>${BANDS[l]}</b><div class="bar"><i style="width:${100*c[3]/m}%;background:var(--ok)"></i><i style="width:${100*c[2]/m}%;background:#7bc96f"></i><i style="width:${100*c[1]/m}%;background:var(--warn)"></i></div><span>${c[1]+c[2]+c[3]} / ${ws.length} studied</span></div>`;
+    h+=`<div class="lv"><b><span class="bl">${BANDS[l]}</span><span class="bs">${BSHORT[l]}</span></b><div class="bar"><i style="width:${100*c[3]/m}%;background:var(--ok)"></i><i style="width:${100*c[2]/m}%;background:#7bc96f"></i><i style="width:${100*c[1]/m}%;background:var(--warn)"></i></div><span>${c[1]+c[2]+c[3]} / ${ws.length} studied</span></div>`;
   }
   h+=`<p class="tag">General = New General Service List (most frequent English words). TOEIC core = TOEIC Service List, the extra words that appear in TOEIC tests. Together ≈ 99% of TOEIC text.</p></div>
   <h2>Last 14 days</h2><div class="card"><div style="display:flex;align-items:flex-end;gap:6px;height:90px">`;
@@ -175,14 +181,14 @@ function graph(){
   if(!gsel&&deg.length)gsel=deg[0][0].w;
   const q=gq.trim().toLowerCase();
   const hits=q?G.ws.filter(w=>w.w.toLowerCase().includes(q)||w.th.includes(q)||w.en.toLowerCase().includes(q)).slice(0,14):[];
-  $('#app').innerHTML=`<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+  $('#app').innerHTML=`<div class="gtop" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
    <input type="search" id="gq" placeholder="Search word / Thai / meaning…" value="${esc(gq)}" style="min-width:260px">
    <label style="font-size:14px;color:var(--mute)">Max words per group <input type="number" id="gcap" min="5" max="80" value="${gcap}" style="width:70px"></label>
    <span class="tag">Related = same word family (account → accountant) or same Thai meaning (client, customer → ลูกค้า).</span></div>
    ${hits.length?`<div class="row" style="justify-content:flex-start;margin:0 0 12px">${hits.map(w=>`<span class="chip" data-g="${esc(w.w)}">${esc(w.w)}</span>`).join('')}</div>`:''}
    <div id="gmain"></div>
    <h2>Most connected words (in selected bands)</h2>
-   <div class="card"><table><tr><th>#</th><th>Word</th><th>Thai</th><th>Meaning</th><th>Related</th></tr>
+   <div class="card tscroll"><table><tr><th>#</th><th>Word</th><th>Thai</th><th>Meaning</th><th>Related</th></tr>
    ${deg.slice(0,30).map(([w,d],i)=>`<tr style="cursor:pointer" data-g="${esc(w.w)}"><td>${i+1}</td><td class="h">${esc(w.w)}</td><td>${esc(w.th.slice(0,50))}</td><td>${esc(w.en.slice(0,60))}</td><td><b>${d}</b></td></tr>`).join('')}</table></div>`;
   $('#gq').oninput=e=>{gq=e.target.value;const p=e.target.selectionStart;graph();const i=$('#gq');i.focus();i.setSelectionRange(p,p)};
   $('#gcap').onchange=e=>{gcap=Math.max(5,Math.min(80,+e.target.value||25));graph()};
@@ -191,7 +197,7 @@ function graph(){
 }
 function gDraw(G,c){
   const fam=G.fam(c),syn=G.syn(c).filter(x=>!fam.includes(x)),all=G.rel(c);
-  const W=760,H=560,nodes=[],links=[],by=new Map();
+  const W=Math.round(Math.min(760,Math.max(330,($('#gmain').clientWidth||760)-20))),H=W<600?Math.round(W*1.45):560,nodes=[],links=[],by=new Map();
   const add=(w,t)=>{let n=by.get(t+(w.id??w.w));if(!n){n={w,t,x:0,y:0,vx:0,vy:0,r:t==='c'?34:t==='h'?24:14};by.set(t+(w.id??w.w),n);nodes.push(n)}return n};
   const cn=add(c,'c');cn.x=W/2;cn.y=H/2;cn.fixed=1;
   const groups=[{name:'Word family',list:fam,ang:Math.PI},{name:'Same Thai meaning',list:syn,ang:0}].filter(g=>g.list.length);
@@ -218,7 +224,7 @@ function gDraw(G,c){
     return `<g data-g="${esc(n.w.w)}" style="cursor:pointer"><title>${esc(n.w.w)} — ${esc(n.w.th)} (${BANDS[n.w.b]})</title>
     <circle cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${rad(n)}" fill="${col}" fill-opacity=".9" stroke="var(--card)" stroke-width="2"/>
     <text x="${n.x.toFixed(1)}" y="${(n.y+fs*.35).toFixed(1)}" text-anchor="middle" font-size="${fs}" font-weight="600" fill="#fff" style="pointer-events:none">${esc(n.w.w)}</text></g>`}).join('');
-  $('#gmain').innerHTML=`<div class="grid" style="grid-template-columns:minmax(0,2fr) minmax(240px,1fr);gap:14px">
+  $('#gmain').innerHTML=`<div class="ggrid">
    <div class="card" style="padding:8px"><svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">${lines}${circ}</svg>
     <div class="tag" style="padding:6px 10px">${LVC.map((c,i)=>`<span style="color:${c}">●</span> ${BSHORT[i+1]}`).join(' &nbsp; ')} · click a word to re-center</div></div>
    <div class="card"><div class="wd" style="font-size:${c.w.length>10?30:42}px;text-align:center">${esc(c.w)}</div>
@@ -303,7 +309,7 @@ function browse(){
     const per=100,pages=Math.max(1,Math.ceil(ws.length/per));br.page=Math.min(br.page,pages-1);
     const cols=['#e3e7ef','#e0a01b','#7bc96f','#1f9d6b'];
     $('#list').innerHTML=ws.length?`<table><thead><tr><th></th><th>Word</th><th>IPA</th><th>Thai</th><th>English</th><th>POS</th><th>Band</th><th></th></tr></thead><tbody>`+
-     ws.slice(br.page*per,(br.page+1)*per).map(w=>`<tr><td><span class="dot" style="background:${cols[stage(w.id)]}"></span></td><td class="h">${esc(w.w)}</td><td>${esc(w.ipa)}</td><td>${esc(w.th)}${autoTag(w)}</td><td>${esc(w.en)}</td><td>${esc(w.pos)}</td><td>${BSHORT[w.b]}</td><td><button class="sp" data-s="${esc(w.w)}">🔊</button></td></tr>`).join('')+`</tbody></table>
+     ws.slice(br.page*per,(br.page+1)*per).map(w=>`<tr><td class="c-dot"><span class="dot" style="background:${cols[stage(w.id)]}"></span></td><td class="h c-w">${esc(w.w)}</td><td class="c-py">${esc(w.ipa)}</td><td class="c-th">${esc(w.th)}${autoTag(w)}</td><td class="c-en">${esc(w.en)}</td><td class="c-pos">${esc(w.pos)}</td><td class="c-lv">${BSHORT[w.b]}</td><td class="c-sp"><button class="sp" data-s="${esc(w.w)}">🔊</button></td></tr>`).join('')+`</tbody></table>
      <div class="pager"><button class="btn alt" id="pv">‹</button>Page ${br.page+1} / ${pages} · ${ws.length} words<button class="btn alt" id="nxp">›</button></div>`:'<div class="empty">No matches.</div>';
     document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>speak(b.dataset.s));
     const pv=$('#pv'),nx=$('#nxp');if(pv){pv.onclick=()=>{br.page=Math.max(0,br.page-1);run()};nx.onclick=()=>{br.page=Math.min(pages-1,br.page+1);run()}}

@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Vocab · HSK</title>
+<meta name="apple-mobile-web-app-title" content="Vocab HSK">
 <style>
 :root{--bg:#f6f7fb;--card:#fff;--ink:#1d2433;--mute:#6b7487;--line:#e3e7ef;--brand:#d6402f;--brand2:#2f6bd6;--ok:#1f9d6b;--warn:#e0a01b;--bad:#d6402f;--shadow:0 2px 10px rgba(20,30,60,.07)}
 @media (prefers-color-scheme:dark){:root{--bg:#12151d;--card:#1b2030;--ink:#e8ecf5;--mute:#98a1b6;--line:#2a3147;--shadow:none}}
@@ -51,16 +52,21 @@ td.h{font-size:22px;font-family:"Noto Sans SC","Microsoft YaHei",sans-serif}
 .pager{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:12px}
 .empty{padding:40px;text-align:center;color:var(--mute)}
 .kbd{font-size:12px;color:var(--mute);margin-top:10px}
-@media(max-width:600px){.hz{font-size:72px}.lv{grid-template-columns:50px 1fr}.lv span:last-child{display:none}}
 .subj{display:flex;gap:2px;background:var(--line);border-radius:10px;padding:3px;margin-left:auto}.subj a{padding:5px 12px;border-radius:8px;color:var(--mute);text-decoration:none;font-weight:700;font-size:14px}.subj a.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
 </style>
+<meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12151d" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="stylesheet" href="responsive.css">
 </head>
 <body>
 <header><div class="wrap">
  <div class="top">
-  <div class="logo">汉语 <b>HSK</b> Dashboard</div>
+  <div class="logo">汉语 <b>HSK</b><span class="lg-x"> Dashboard</span></div>
   <nav id="nav">
-   <button data-v="dash" class="on">Dashboard</button><button data-v="cards">Flashcards</button><button data-v="quiz">Quiz</button><button data-v="browse">Browse</button><button data-v="graph">Word Graph</button>
+   <button data-v="dash" class="on"><i>🏠</i><span>Dashboard</span></button><button data-v="cards"><i>🃏</i><span>Flashcards</span></button><button data-v="quiz"><i>✅</i><span>Quiz</span></button><button data-v="browse"><i>📖</i><span>Browse</span></button><button data-v="graph"><i>🕸️</i><span>Graph</span></button>
   </nav>
   <div class="subj"><a href="./" class="on">汉语 HSK</a><a href="toeic.html">📘 TOEIC</a></div>
  </div>
@@ -164,14 +170,14 @@ function graph(){
   if(!gsel&&deg.length)gsel=(deg.find(([w])=>w.hz.length<=2)||deg[0])[0].hz;
   const q=gq.trim().toLowerCase();
   const hits=q?G.ws.filter(w=>w.hz.includes(q)||w.py.toLowerCase().includes(q)||w.en.toLowerCase().includes(q)||w.th.includes(q)).slice(0,12):[];
-  $('#app').innerHTML=`<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+  $('#app').innerHTML=`<div class="gtop" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
    <input type="search" id="gq" placeholder="Search hanzi / pinyin / meaning…" value="${esc(gq)}" style="min-width:260px">
    <label style="font-size:14px;color:var(--mute)">Max words per character <input type="number" id="gcap" min="5" max="80" value="${gcap}" style="width:70px"></label>
    <span class="tag">A word is related to another when they share a Chinese character (e.g. 学 → 学生, 大学, 学习).</span></div>
    ${hits.length?`<div class="row" style="justify-content:flex-start;margin:0 0 12px">${hits.map(w=>`<span class="chip" data-g="${esc(w.hz)}">${esc(w.hz)} <small>${esc(w.py)}</small></span>`).join('')}</div>`:''}
    <div id="gmain"></div>
    <h2>Most connected words (in selected levels)</h2>
-   <div class="card"><table><tr><th>#</th><th>Word</th><th>Pinyin</th><th>Meaning</th><th>Related words</th></tr>
+   <div class="card tscroll"><table><tr><th>#</th><th>Word</th><th>Pinyin</th><th>Meaning</th><th>Related words</th></tr>
    ${deg.slice(0,30).map(([w,d],i)=>`<tr style="cursor:pointer" data-g="${esc(w.hz)}"><td>${i+1}</td><td class="h">${esc(w.hz)}</td><td>${esc(w.py)}</td><td>${esc(w.en.slice(0,60))}</td><td><b>${d}</b></td></tr>`).join('')}</table></div>`;
   $('#gq').oninput=e=>{gq=e.target.value;const p=e.target.selectionStart;graph();const i=$('#gq');i.focus();i.setSelectionRange(p,p)};
   $('#gcap').onchange=e=>{gcap=Math.max(5,Math.min(80,+e.target.value||30));graph()};
@@ -183,7 +189,7 @@ function gDraw(G,c){
   const all=G.rel(c);
   const nodes=[],links=[],byHz=new Map();
   const add=(w,t)=>{let n=byHz.get(w.hz);if(!n){n={w,t,id:nodes.length,x:0,y:0,vx:0,vy:0,r:t==='c'?30:t==='h'?20:13};byHz.set(w.hz,n);nodes.push(n)}return n};
-  const W=760,H=560,cn=add(c,'c');cn.x=W/2;cn.y=H/2;cn.fixed=1;
+  const W=Math.round(Math.min(760,Math.max(330,($('#gmain').clientWidth||760)-20))),H=W<600?Math.round(W*1.45):560,cn=add(c,'c');cn.x=W/2;cn.y=H/2;cn.fixed=1;
   let shown=0;const groups=[];
   chars.forEach((ch,ci)=>{
     const list=(G.idx[ch]||[]).filter(w=>w.hz!==c.hz).sort((a,b)=>lvOf(a)-lvOf(b)||a.hz.length-b.hz.length);
@@ -214,7 +220,7 @@ function gDraw(G,c){
     <circle cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${n.t==='w'?Math.max(n.r,6+n.w.hz.length*5):n.r}" fill="${col}" fill-opacity="${n.t==='h'?.55:.9}" stroke="var(--card)" stroke-width="2"/>
     <text x="${n.x.toFixed(1)}" y="${(n.y+fs*.35).toFixed(1)}" text-anchor="middle" font-size="${fs}" fill="#fff" style="pointer-events:none;font-family:'Noto Sans SC','Microsoft YaHei',sans-serif">${esc(n.w.hz)}</text></g>`}).join('');
   const sh=nodes.filter(n=>n.t==='w').length;
-  $('#gmain').innerHTML=`<div class="grid" style="grid-template-columns:minmax(0,2fr) minmax(240px,1fr);gap:14px">
+  $('#gmain').innerHTML=`<div class="ggrid">
    <div class="card" style="padding:8px"><svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">${lines}${circ}</svg>
     <div class="tag" style="padding:6px 10px">${LVC.map((c,i)=>`<span style="color:${c}">●</span> HSK ${i+1}`).join(' &nbsp; ')} · click any node to re-center</div></div>
    <div class="card"><div class="hz" style="font-size:${c.hz.length>3?40:64}px;text-align:center">${esc(c.hz)}</div>
@@ -304,7 +310,7 @@ function browse(){
     const per=100,pages=Math.max(1,Math.ceil(ws.length/per));br.page=Math.min(br.page,pages-1);
     const cols=['#e3e7ef','#e0a01b','#7bc96f','#1f9d6b'];
     $('#list').innerHTML=ws.length?`<table><thead><tr><th></th><th>汉字</th><th>Pinyin</th><th>Thai</th><th>English</th><th>HSK</th><th></th></tr></thead><tbody>`+
-     ws.slice(br.page*per,(br.page+1)*per).map(w=>`<tr><td><span class="dot" style="background:${cols[stage(w.id)]}"></span></td><td class="h">${esc(w.hz)}</td><td>${esc(w.py)}</td><td>${esc(w.th)}</td><td>${esc(w.en)}</td><td>${lvOf(w)}</td><td><button class="sp" data-s="${esc(w.hz)}">🔊</button></td></tr>`).join('')+`</tbody></table>
+     ws.slice(br.page*per,(br.page+1)*per).map(w=>`<tr><td class="c-dot"><span class="dot" style="background:${cols[stage(w.id)]}"></span></td><td class="h c-w">${esc(w.hz)}</td><td class="c-py">${esc(w.py)}</td><td class="c-th">${esc(w.th)}</td><td class="c-en">${esc(w.en)}</td><td class="c-lv">${lvOf(w)}</td><td class="c-sp"><button class="sp" data-s="${esc(w.hz)}">🔊</button></td></tr>`).join('')+`</tbody></table>
      <div class="pager"><button class="btn alt" id="pv">‹</button>Page ${br.page+1} / ${pages} · ${ws.length} words<button class="btn alt" id="nxp">›</button></div>`:'<div class="empty">No matches.</div>';
     document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>speak(b.dataset.s));
     const pv=$('#pv'),nx=$('#nxp'); if(pv){pv.onclick=()=>{br.page=Math.max(0,br.page-1);run()};nx.onclick=()=>{br.page=Math.min(pages-1,br.page+1);run()}}

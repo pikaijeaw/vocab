@@ -1,0 +1,150 @@
+/* Shared responsive layer for index.html (HSK) and toeic.html (TOEIC).
+   Breakpoints: phone < 640px · tablet 640–1023px · desktop >= 1024px */
+
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{min-height:100vh;min-height:100dvh;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+button,a,.chip,.opt,select{touch-action:manipulation}
+header .wrap,main.wrap{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+main.wrap{padding-top:20px;padding-bottom:60px}
+header{backdrop-filter:saturate(1.6) blur(10px);-webkit-backdrop-filter:saturate(1.6) blur(10px);background:color-mix(in srgb,var(--card) 88%,transparent)}
+nav button i{font-style:normal;display:none}
+.bs{display:none}
+.card{transition:box-shadow .15s}
+svg{max-width:100%}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ggrid{display:grid;gap:14px;grid-template-columns:minmax(0,2fr) minmax(260px,1fr);align-items:start}
+.ggrid>.card:last-child{position:sticky;top:130px}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--brand2) 60%,transparent);outline-offset:2px}
+
+/* hover effects only where a real pointer exists (no sticky hover on touch) */
+@media (hover:hover){
+  .card:hover{box-shadow:0 6px 22px rgba(20,30,60,.10)}
+  nav button:not(.on):hover{background:var(--line);color:var(--ink)}
+  .chip:hover{border-color:var(--brand2)}
+  tbody tr:hover td{background:color-mix(in srgb,var(--brand2) 5%,transparent)}
+}
+/* touch devices: bigger targets, no keyboard hints */
+@media (pointer:coarse){
+  .kbd{display:none}
+  .chip{padding:7px 14px;min-height:36px}
+  .btn{min-height:46px}
+  .sp{min-width:44px;min-height:44px}
+  select,input[type=search],input[type=number]{font-size:16px;min-height:42px} /* 16px stops iOS zoom-on-focus */
+}
+
+/* ---------- tablet (Samsung Tab portrait, iPad, small laptops) ---------- */
+@media (min-width:640px) and (max-width:1023px){
+  .top{row-gap:6px}
+  .subj{order:2;margin-left:auto}
+  nav{order:3;flex-basis:100%;justify-content:space-between;background:var(--bg);border-radius:12px;padding:4px}
+  nav button{flex:1;padding:10px 6px;font-size:15px}
+  nav button i{display:inline;margin-right:6px}
+  nav button.on{box-shadow:var(--shadow)}
+}
+@media (min-width:640px) and (max-width:1023px){
+  .g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:1023px){
+  .ggrid{grid-template-columns:1fr}
+  .ggrid>.card:last-child{position:static;order:-1}
+  .lv{grid-template-columns:120px 1fr 130px}
+}
+
+/* ---------- phone (iPhone, Android phones) ---------- */
+@media (max-width:639px){
+  /* backdrop-filter on the header would make the fixed tab bar position relative to the header */
+  header{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--card)}
+  body{padding-bottom:calc(68px + env(safe-area-inset-bottom))}
+  .top{padding:8px 0 6px;gap:8px;flex-wrap:nowrap}
+  .logo{font-size:17px;white-space:nowrap;min-width:0}
+  .lg-x{display:none}
+  .subj{margin-left:auto;flex-shrink:0}.subj a{padding:5px 10px;font-size:13px;white-space:nowrap}
+
+  /* nav becomes an iOS-style bottom tab bar */
+  nav{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(5,1fr);gap:0;
+      background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:saturate(1.6) blur(14px);-webkit-backdrop-filter:saturate(1.6) blur(14px);
+      border-top:1px solid var(--line);padding:4px max(4px,env(safe-area-inset-right)) calc(4px + env(safe-area-inset-bottom)) max(4px,env(safe-area-inset-left))}
+  nav button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border-radius:10px;font-size:11px;font-weight:600;min-height:52px}
+  nav button i{display:block;font-size:21px;line-height:1}
+  nav button.on{background:none;color:var(--brand)}
+  nav button.on i{transform:scale(1.08)}
+  nav button span{white-space:nowrap}
+
+  /* filters: one horizontally scrollable row instead of 3 wrapped rows */
+  .filters{flex-wrap:nowrap;overflow-x:auto;padding:2px 16px 10px;margin:0 -16px;scrollbar-width:none}
+  .filters::-webkit-scrollbar{display:none}
+  .filters>*{flex-shrink:0}
+  .filters::after{content:'';flex:0 0 6px}  /* keeps right padding when scrolled to the end */
+  .filters select{font-size:15px;min-height:36px;padding:4px 8px}
+
+  main.wrap{padding-top:14px;padding-bottom:24px}
+  h2{font-size:16px;margin:18px 0 8px}
+  .card{padding:14px;border-radius:12px}
+  .g4{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .stat .n{font-size:24px}.stat .l{font-size:12px}
+  .row{gap:8px}
+  .row>.btn{flex:1 1 auto}
+  .row label{margin-left:0!important;flex:1 1 45%;display:flex;align-items:center;gap:6px;justify-content:space-between;white-space:nowrap;font-size:13px!important}
+  .row label input{width:62px!important}
+  .lv{grid-template-columns:auto 1fr auto;gap:10px;font-size:13px}
+  .lv span:last-child{display:block;font-size:11px;white-space:nowrap}
+  .lv b{max-width:96px}
+  .bl{display:none}.bs{display:inline}
+  .lv b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* flashcards */
+  .face{min-height:min(52vh,360px)}
+  .hz{font-size:84px}
+  .fc .row .btn[data-r]{flex:1 1 30%;padding:12px 6px}
+  .fc .row #spk,.fc .row #rev{flex:1 1 100%}
+  .opt{font-size:17px;padding:13px 12px}
+  .opts .hz{font-size:30px!important}
+
+  /* browse table -> card list */
+  #list{padding:4px 10px!important}
+  #list table, #list tbody{display:block}
+  #list thead{display:none}
+  #list tr{display:grid;grid-template-columns:14px auto 1fr auto;grid-template-areas:"dot w py sp" "dot th th sp" "dot en en sp";
+           column-gap:10px;row-gap:2px;padding:10px 2px;border-bottom:1px solid var(--line);align-items:baseline}
+  #list td{border:0;padding:0;display:block}
+  #list td.c-dot{grid-area:dot;align-self:center}
+  #list td.c-w{grid-area:w;font-size:22px}
+  #list td.c-py{grid-area:py;color:var(--brand2);font-size:14px}
+  #list td.c-th{grid-area:th;font-weight:600}
+  #list td.c-en{grid-area:en;color:var(--mute);font-size:13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  #list td.c-lv,#list td.c-pos{display:none}
+  #list td.c-sp{grid-area:sp;align-self:center}
+  .pager{gap:8px;font-size:13px}
+
+  /* graph */
+  .ggrid .card:first-child{padding:4px!important}
+  .ggrid svg text{paint-order:stroke}
+  .gtop{flex-direction:column;align-items:stretch!important}
+  .gtop input[type=search]{min-width:0!important;width:100%}
+  .gtop .tag{font-size:11px}
+  .ggrid .hz{font-size:48px!important}
+  .ggrid .wd{font-size:32px!important}
+  .tscroll table{font-size:13px}
+  .tscroll th:nth-child(4),.tscroll td:nth-child(4){display:none}
+}
+
+/* very small phones (iPhone SE / mini) */
+@media (max-width:379px){
+  .logo b+*,.logo{font-size:15px}
+  nav button{font-size:10px}
+  .g4{grid-template-columns:1fr 1fr}
+  .stat .n{font-size:21px}
+  .hz{font-size:72px}
+}
+
+/* landscape phones: keep the bottom bar short */
+@media (max-height:500px) and (orientation:landscape) and (max-width:950px){
+  nav button{min-height:40px;flex-direction:row;gap:6px;font-size:12px}
+  nav button i{font-size:17px}
+  .face{min-height:200px}
+}
+
+/* large desktops */
+@media (min-width:1400px){
+  .wrap{max-width:1240px}
+}
