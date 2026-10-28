@@ -53,6 +53,9 @@ td.h{font-size:22px;font-family:"Noto Sans SC","Microsoft YaHei",sans-serif}
 .empty{padding:40px;text-align:center;color:var(--mute)}
 .kbd{font-size:12px;color:var(--mute);margin-top:10px}
 .subj{display:flex;gap:2px;background:var(--line);border-radius:10px;padding:3px;margin-left:auto}.subj a{padding:5px 12px;border-radius:8px;color:var(--mute);text-decoration:none;font-weight:700;font-size:14px}.subj a.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.fchead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.pytog{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none}.pytog input{width:16px;height:16px;accent-color:var(--brand2)}
+@media (pointer:coarse){.kbdk{display:none}.pytog input{width:20px;height:20px}}
 </style>
 <meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#12151d" media="(prefers-color-scheme: dark)">
@@ -84,7 +87,7 @@ const WORDS=window.HSK_DATA.map((r,i)=>({id:i,o:+r[0]||0,n:+r[1]||0,hz:r[2],tr:r
 
 const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
-let S=Object.assign({sys:'new',lv:[1,2,3,4,5,6],newPerDay:20,goal:30},load('hsk_settings',{}));
+let S=Object.assign({sys:'new',lv:[1,2,3,4,5,6],newPerDay:20,goal:30,pyFront:true},load('hsk_settings',{}));
 let P=load('hsk_progress',{});          // id -> {b:box,d:due,s:seen,c:correct,w:wrong}
 let L=load('hsk_log',{});               // yyyy-mm-dd -> reviews
 const today=()=>new Date().toISOString().slice(0,10);
@@ -249,14 +252,15 @@ function drawCard(){
   const w=fc.q[fc.i];
   if(!w){$('#app').innerHTML=`<div class="card empty"><div style="font-size:48px">🎉</div><h2>All caught up!</h2><p>No more cards due or new cards for now.<br>Raise “New cards/day” on the dashboard or pick other levels.</p><button class="btn" onclick="HSKgo('dash')">Back to dashboard</button></div>`;return}
   const isNew=!(P[w.id]&&P[w.id].s);
-  $('#app').innerHTML=`<div class="fc"><div class="tag">Card ${fc.i+1} / ${fc.q.length} · HSK ${lvOf(w)} ${isNew?'· <b>NEW</b>':''}</div>
+  $('#app').innerHTML=`<div class="fc"><div class="tag fchead"><span>Card ${fc.i+1} / ${fc.q.length} · HSK ${lvOf(w)} ${isNew?'· <b>NEW</b>':''}</span><label class="pytog"><input type="checkbox" id="pyf"${S.pyFront?' checked':''}> Pinyin on front <span class="kbdk">(P)</span></label></div>
   <div class="card face" id="face">${fc.flip?
    `<div class="hz" style="font-size:64px">${esc(w.hz)}</div><div class="py">${esc(w.py)}</div><div class="th">${esc(w.th)}</div><div class="en">${esc(w.en)}</div><div class="tag">${esc(w.pos)}${w.tr!==w.hz?' · '+esc(w.tr):''}${w.auto?' · Thai: machine-translated':''}</div>`:
-   `<div class="hz">${esc(w.hz)}</div><div class="tag">tap or press Space to reveal</div>`}</div>
+   `<div class="hz">${esc(w.hz)}</div>${S.pyFront?`<div class="py">${esc(w.py)}</div>`:''}<div class="tag">tap or press Space to reveal</div>`}</div>
   <div class="row">${fc.flip?
    `<button class="btn bad" data-r="0">Again (1)</button><button class="btn ok" data-r="1">Good (2)</button><button class="btn warn" data-r="2">Easy (3)</button>`:
    `<button class="btn" id="rev">Show answer</button>`}<button class="btn alt" id="spk">🔊 Listen (S)</button></div>
-  <div class="kbd">Keys: Space = flip · 1/2/3 = rate · S = speak</div></div>`;
+  <div class="kbd">Keys: Space = flip · 1/2/3 = rate · S = speak · P = pinyin on/off</div></div>`;
+  $('#pyf').onchange=e=>{S.pyFront=e.target.checked;saveAll();drawCard()};
   $('#face').onclick=()=>{fc.flip=!fc.flip;drawCard()};
   const rv=$('#rev'); if(rv) rv.onclick=()=>{fc.flip=true;drawCard()};
   $('#spk').onclick=()=>speak(w.hz);
@@ -329,6 +333,7 @@ addEventListener('keydown',e=>{
     if(e.code==='Space'){e.preventDefault();if(!fc.flip){fc.flip=true;drawCard()}else rate(1)}
     else if(fc.flip&&'123'.includes(e.key))rate(+e.key-1);
     else if(e.key.toLowerCase()==='s'&&fc.q[fc.i])speak(fc.q[fc.i].hz);
+    else if(e.key.toLowerCase()==='p'){S.pyFront=!S.pyFront;saveAll();drawCard()}
   } else if(view==='quiz'&&qz.cur){
     if('1234'.includes(e.key)&&e.key)answer(+e.key-1);
     else if(e.key==='Enter'&&qz.cur.answered)nextQ();
